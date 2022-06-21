@@ -1,34 +1,45 @@
-# 데이터베이스에 접속해서, 데이터 처리하는 테스트 코드
-
+# 데이터베이스에 접속해서 데이터 처리하는 테스트 코드
 import mysql.connector
-
 from mysql_connection import get_connection
 
 try :
-    # 데이터 insert 
-    # 1. DB에 연결
+    # DATA INSERT
+    # 1. Connect DB
     connection = get_connection()
 
-    # 2. 쿼리문 만들기
-    query = '''insert into recipe
-            (name, description, cook_time, directions)
+    # 2. SQL Query
+    # query = '''
+    #         insert into recipe
+    #             (name, description, cook_time, direction)
+    #         values
+    #             ('된장찌개', '맛있는 된장찌개 만드는 방법',
+    #             '30', '된장을 물에 풀어 야채를 넣고 끓여준다.');
+    #         '''
+    name = '순두부'
+    description = '맛있는 순두부찌개 만드는 법'
+    cook_time = 45 
+    direction = '먼저 고기를 볶은후, 물을 넣고, 순두부 넣고 끓인다.'
+    query = '''
+            insert into recipe
+                (name, description, cook_time, direction)
             values
-            ('된장찌게', '맛있는 된장찌게 만드는방법', 30, 
-            '먼저 고기를 볶은후, 물을넣고, 된장넣고 끓인다.');'''
-    # 3. 커서를 가져온다.
+                (%s ,%s ,%s ,%s);
+            '''
+    record = (name, description, cook_time, direction )
+
+    # 3. Get Cursor
     cursor = connection.cursor()
 
-    # 4. 쿼리문을 커서를 이용해서 실행한다.
-    cursor.execute(query)
+    # 4. Execute Query with cursor
+    #cursor.execute(query)
+    cursor.execute(query, record)
 
-    # 5. 커넥션을 커밋해줘야 한다 => 디비에 영구적으로 반영하라는 뜻
+    # 5. DATA commit at DB
     connection.commit()
 
-    # 6. 자원 해제
+    # 6. Close Resource
     cursor.close()
     connection.close()
 
 except mysql.connector.Error as e :
     print(e)
-    cursor.close()
-    connection.close()
